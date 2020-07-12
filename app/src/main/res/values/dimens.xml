@@ -1,0 +1,10 @@
+<resources>
+    <dimen name="default_margin_0_5x">8dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="default_margin_1_5x">24dp</dimen>
+    <dimen name="default_margin_2x">32dp</dimen>
+
+    <!-- BEGIN: Repository list -->
+    <dimen name="repository_avatar_size">64dp</dimen>
+    <!-- END: Repository list-->
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Repository list</string>
+
+    <!-- BEGIN: Request status -->
+    <string name="text_request_status_try_again">Tentar novamente</string>
+    <string name="text_request_status_empty_list_title">Lista vazia</string>
+    <!-- END: Request status -->
+
+    <!-- BEGIN: Repository item -->
+    <string name="a11y_item_repository_avatar">Repository owner avatar image</string>
+    <!-- END: Repository item -->
+</resources>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="repositoryResponseModel"
+            type="com.github.repositorylist.model.response.RepositoryResponseModel" />
+
+        <variable
+            name="repositoryActions"
+            type="com.github.repositorylist.ui.common.IRepositoryActions" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> repositoryActions.showRepositoryDetail(repositoryResponseModel)}">
+
+        <ImageView
+            android:id="@+id/image_item_repository_avatar"
+            android:layout_width="@dimen/repository_avatar_size"
+            android:layout_height="@dimen/repository_avatar_size"
+            android:layout_marginTop="@dimen/default_margin_0_5x"
+            android:layout_marginBottom="@dimen/default_margin_0_5x"
+            android:contentDescription="@string/a11y_item_repository_avatar"
+            app:imageCircular="@{true}"
+            app:imageUrl="@{repositoryResponseModel.owner.avatarUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_item_repository_name"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{repositoryResponseModel.name}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/image_item_repository_avatar"
+            app:layout_constraintTop_toTopOf="@+id/image_item_repository_avatar"
+            tools:text="Repository name" />
+
+        <TextView
+            android:id="@+id/text_item_repository_owner_login"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{repositoryResponseModel.owner.login}"
+            app:layout_constraintEnd_toEndOf="@+id/text_item_repository_name"
+            app:layout_constraintStart_toStartOf="@+id/text_item_repository_name"
+            app:layout_constraintTop_toBottomOf="@+id/text_item_repository_name"
+            tools:text="ownerName" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
