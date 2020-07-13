@@ -10,6 +10,7 @@ import javax.inject.Inject
 class RepositoryListViewModel @Inject constructor(
     private val githubRepository: GithubRepository
 ) : ViewModel(), IRepositoryActions {
+    private var query = ""
     private val mRepositoryList = MediatorLiveData<Result<List<RepositoryResponseModel>>>()
     val repositoryList: LiveData<Result<List<RepositoryResponseModel>>>
         get() = mRepositoryList
@@ -22,6 +23,15 @@ class RepositoryListViewModel @Inject constructor(
         mRepositoryList.addSource(githubRepository.getRepositoryList(viewModelScope)) {
             mRepositoryList.postValue(it)
         }
+    }
+
+    fun onQueryChanged(query: String) {
+        if (this.query == query) {
+            return
+        }
+
+        this.query = query
+
     }
 
     fun tryLoadListAgain() {

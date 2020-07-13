@@ -12,6 +12,9 @@ data class RepositoryResponseModel(
     @SerializedName("name")
     val name: String,
 
+    @SerializedName("description")
+    val description: String,
+
     @SerializedName("owner")
     val owner: RepositoryOwnerResponseModel
 ) : Parcelable
