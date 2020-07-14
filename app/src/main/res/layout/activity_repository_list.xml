@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.repositoryList.RepositoryListActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.github.repositorylist.widgets.recyclerView.PaginatedRecyclerView
         android:id="@+id/list_repository"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

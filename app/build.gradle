@@ -17,7 +17,7 @@ android {
 
         buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.github.repositorylist.CustomAndroidJUnitRunner"
     }
 
     buildTypes {
@@ -73,4 +73,33 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timber_version"
 
 
+   /* // Unit tests - JUnit
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junit_version"
+    // Unit tests - MockK
+    testImplementation "io.mockk:mockk:$mockk_version"
+    // Unit tests - Faker
+    testImplementation "com.github.javafaker:javafaker:$java_faker_version"
+    // Unit tests - Coroutines
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"*/
+
+    // Instrumented tests - Orchestrator
+    androidTestUtil "androidx.test:orchestrator:$test_orchestrator_version"
+    // Instrumented tests - JUnit
+    androidTestImplementation "androidx.test.ext:junit:$android_ext_junit_version"
+    // Instrumented tests - Mockito + Mockito Kotlin
+    androidTestImplementation "org.mockito:mockito-android:$mockito_version"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin_version"
+    // Instrumented tests - Espresso
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
+    androidTestImplementation "androidx.test:rules:$test_rules_version"
+    androidTestImplementation "androidx.test:runner:$test_rules_version"
+    // Instrumented tests - Faker
+    androidTestImplementation "com.github.javafaker:javafaker:$java_faker_version"
+    // Instrumented tests - Hilt
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 }

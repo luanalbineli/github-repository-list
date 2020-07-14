@@ -8,6 +8,9 @@
 
     <!-- BEGIN: Repository list -->
     <string name="text_repository_list_search">Procurar</string>
+    <string name="text_repository_list_empty">Nenhum repositório encontrado</string>
+    <string name="text_repository_list_input_repository_name">Informe o nome do repositório</string>
+    <string name="error_repository_list_loading">Não foi possível carregar a lista de repositórios. Por favor, tente novamente.</string>
     <!-- END: Repository list -->
 
     <!-- BEGIN: Repository item -->
@@ -16,6 +19,5 @@
 
     <!-- BEGIN: Repository detail -->
     <string name="text_repository_detail_title" formatted="true">Detalhes do repositório</string>
-    <string name="text_repository_list_input_repository_name">Informe o nome do repositório</string>
     <!-- END: Repository detail -->
 </resources>

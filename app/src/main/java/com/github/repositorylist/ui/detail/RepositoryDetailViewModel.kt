@@ -4,11 +4,11 @@ import androidx.lifecycle.*
 import com.github.repositorylist.model.common.Result
 import com.github.repositorylist.model.response.RepositoryResponseModel
 import com.github.repositorylist.model.response.UserResponseModel
-import com.github.repositorylist.repository.github.GithubRepository
+import com.github.repositorylist.repository.github.IGithubRepository
 import javax.inject.Inject
 
 class RepositoryDetailViewModel @Inject constructor(
-    private val githubRepository: GithubRepository
+    private val githubRepository: IGithubRepository
 ) : ViewModel() {
     private val mUser = MediatorLiveData<Result<UserResponseModel>>()
     val userResponseModel: LiveData<Result<UserResponseModel>>
@@ -20,7 +20,12 @@ class RepositoryDetailViewModel @Inject constructor(
 
     fun init(repositoryResponseModel: RepositoryResponseModel) {
         mRepositoryResponseModel.postValue(repositoryResponseModel)
-        mUser.addSource(githubRepository.getUser(viewModelScope, repositoryResponseModel.owner.login)) {
+        mUser.addSource(
+            githubRepository.getUser(
+                viewModelScope,
+                repositoryResponseModel.owner.login
+            )
+        ) {
             mUser.postValue(it)
         }
     }

@@ -1,6 +1,7 @@
 package com.github.repositorylist.ui.repositoryList
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -9,10 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.repositorylist.R
 import com.github.repositorylist.extensions.safeNullObserve
 import com.github.repositorylist.model.common.Status
+import com.github.repositorylist.model.response.RepositoryResponseModel
 import com.github.repositorylist.ui.detail.RepositoryDetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_repository_list.*
-import java.util.*
+import kotlinx.coroutines.CancellationException
+import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -27,6 +31,8 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
         RepositoryListAdapter(
             mViewModel
         ).also {
+            it.emptyMessageResId = R.string.text_repository_list_empty
+            it.errorMessageResId = R.string.error_repository_list_loading
             it.onTryAgain = {
                 mViewModel.tryLoadListAgain()
             }
@@ -39,6 +45,10 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
 
         list_repository.adapter = mAdapter
         list_repository.layoutManager = mLinearLayoutManager
+        list_repository.onLoadMoreItems = {
+            mViewModel.loadNextRepositoryListPage()
+        }
+
         list_repository.addItemDecoration(
             DividerItemDecoration(
                 this,
@@ -46,11 +56,15 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
             )
         )
 
+        attachListeners()
+    }
+
+    private fun attachListeners() {
         mViewModel.repositoryList.safeNullObserve(this) {
             when (it.status) {
                 Status.LOADING -> mAdapter.showLoadingStatus()
-                Status.SUCCESS -> mAdapter.submitList(it.data!!)
-                Status.ERROR -> mAdapter.showErrorStatus()
+                Status.SUCCESS -> showRepositoryList(it.data!!)
+                Status.ERROR -> showError(it.exception)
             }
         }
 
@@ -58,9 +72,35 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
             val intent = RepositoryDetailActivity.getIntent(this, repositoryResponseModel)
             startActivity(intent)
         }
+
+        mViewModel.onQueryChanged.safeNullObserve(this) {
+            list_repository.disableLoadMoreItems()
+            mAdapter.submitList(emptyList())
+            mAdapter.showLoadingStatus()
+        }
     }
 
-    private var mSearchTimer: Timer? = null
+    private fun showError(exception: Exception?) {
+        // When a job is cancelled, it raises a CancellationException
+        if (exception is CancellationException) {
+            return
+        }
+        mAdapter.showErrorStatus()
+    }
+
+    private fun showRepositoryList(repositoryResponseList: List<RepositoryResponseModel>) {
+        Timber.d("showRepositoryList size: ${repositoryResponseList.size} - First: ${repositoryResponseList.firstOrNull()}")
+        mAdapter.submitList(repositoryResponseList)
+        if (repositoryResponseList.isEmpty()) {
+            mAdapter.showEmptyStatus()
+            list_repository.disableLoadMoreItems()
+        } else {
+            list_repository.enableLoadMoreItems(mLinearLayoutManager)
+        }
+    }
+
+    private val mSearchDelayHandler: Handler by lazy { Handler() }
+    private var mSearchDelayRunnable: Runnable? = null
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_repository_list, menu)
@@ -75,7 +115,8 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
     override fun onQueryTextSubmit(query: String?): Boolean = false
 
     override fun onQueryTextChange(query: String): Boolean {
-        mSearchTimer?.cancel()
+        mSearchDelayRunnable?.let { runnable -> mSearchDelayHandler.removeCallbacks(runnable) }
+
         val delay = when (query.length) {
             1 -> 1000L
             2, 3 -> 700L
@@ -83,13 +124,10 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
             else -> 300L
         }
 
-        mSearchTimer = Timer().also {
-            it.schedule(object : TimerTask() {
-                override fun run() {
-                    mViewModel.onQueryChanged(query)
-                }
-            }, delay)
+        mSearchDelayRunnable = Runnable { mViewModel.onQueryChanged(query) }.also {
+            mSearchDelayHandler.postDelayed(it, delay)
         }
+
         return true
     }
 }
