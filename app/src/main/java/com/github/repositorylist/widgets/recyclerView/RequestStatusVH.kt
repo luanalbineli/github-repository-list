@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_request_status.view.*
 
 class RequestStatusVH constructor(itemView: View): CustomVH(itemView) {
-    fun bind(status: RequestStatusView.Status, isListEmpty: Boolean, errorMessageResId: Int?, emptyMessageResId: Int?, onTryAgain: (() -> Unit)? = null) {
+    fun bind(requestStatusType: RequestStatusView.RequestStatusType, isListEmpty: Boolean, errorMessageResId: Int?, emptyMessageResId: Int?, onTryAgain: (() -> Unit)? = null) {
         val layoutParams = itemView.view_request_status.layoutParams
         if (isListEmpty) {
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -16,6 +16,6 @@ class RequestStatusVH constructor(itemView: View): CustomVH(itemView) {
         itemView.view_request_status.setErrorMessage(errorMessageResId)
         itemView.view_request_status.setEmptyMessage(emptyMessageResId)
         itemView.view_request_status.layoutParams = layoutParams
-        itemView.view_request_status.toggleStatus(status)
+        itemView.view_request_status.toggleStatus(requestStatusType)
     }
 }

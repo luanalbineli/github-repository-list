@@ -22,10 +22,10 @@ class RequestStatusView(context: Context, attributeSet: AttributeSet) :
         }
     }
 
-    fun toggleStatus(status: Status) {
-        progress_bar_request_status.setDisplay(status == Status.LOADING)
-        view_request_status_error.setDisplay(status == Status.ERROR)
-        view_request_status_empty.setDisplay(status == Status.EMPTY)
+    fun toggleStatus(requestStatusType: RequestStatusType) {
+        progress_bar_request_status.setDisplay(requestStatusType == RequestStatusType.LOADING)
+        view_request_status_error.setDisplay(requestStatusType == RequestStatusType.ERROR)
+        view_request_status_empty.setDisplay(requestStatusType == RequestStatusType.EMPTY)
     }
 
     fun setErrorMessage(stringResId: Int?) {
@@ -44,7 +44,7 @@ class RequestStatusView(context: Context, attributeSet: AttributeSet) :
         }
     }
 
-    enum class Status {
+    enum class RequestStatusType {
         LOADING,
         ERROR,
         EMPTY

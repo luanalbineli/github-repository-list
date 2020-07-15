@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Repository list</string>
+    <string name="app_name">Lista de repositórios</string>
 
     <!-- BEGIN: Request status -->
     <string name="text_request_status_try_again">Tentar novamente</string>
@@ -19,5 +19,6 @@
 
     <!-- BEGIN: Repository detail -->
     <string name="text_repository_detail_title" formatted="true">Detalhes do repositório</string>
+    <string name="error_repository_detail_fetch_user">Não foi possível buscar os detalhes do repositório. Por favor, tente novamente.</string>
     <!-- END: Repository detail -->
 </resources>

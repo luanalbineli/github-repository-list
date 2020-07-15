@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.repositorylist.R
 import com.github.repositorylist.extensions.safeNullObserve
 import com.github.repositorylist.model.common.Status
-import com.github.repositorylist.model.response.RepositoryResponseModel
+import com.github.repositorylist.model.ui.PaginatedRepositoryListModel
 import com.github.repositorylist.ui.detail.RepositoryDetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_repository_list.*
 import kotlinx.coroutines.CancellationException
 import timber.log.Timber
-import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,6 +60,8 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
 
     private fun attachListeners() {
         mViewModel.repositoryList.safeNullObserve(this) {
+            Timber.d("showRepositoryList - status: ${it.status}")
+            list_repository.disableLoadMoreItems()
             when (it.status) {
                 Status.LOADING -> mAdapter.showLoadingStatus()
                 Status.SUCCESS -> showRepositoryList(it.data!!)
@@ -88,13 +89,12 @@ class RepositoryListActivity : AppCompatActivity(), SearchView.OnQueryTextListen
         mAdapter.showErrorStatus()
     }
 
-    private fun showRepositoryList(repositoryResponseList: List<RepositoryResponseModel>) {
-        Timber.d("showRepositoryList size: ${repositoryResponseList.size} - First: ${repositoryResponseList.firstOrNull()}")
-        mAdapter.submitList(repositoryResponseList)
-        if (repositoryResponseList.isEmpty()) {
+    private fun showRepositoryList(paginatedRepositoryListModel: PaginatedRepositoryListModel) {
+        Timber.d("showRepositoryList - size: $paginatedRepositoryListModel")
+        mAdapter.submitList(paginatedRepositoryListModel.result)
+        if (paginatedRepositoryListModel.result.isEmpty()) {
             mAdapter.showEmptyStatus()
-            list_repository.disableLoadMoreItems()
-        } else {
+        } else if (paginatedRepositoryListModel.hasMorePages) {
             list_repository.enableLoadMoreItems(mLinearLayoutManager)
         }
     }

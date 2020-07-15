@@ -8,71 +8,90 @@
         <variable
             name="viewModel"
             type="com.github.repositorylist.ui.detail.RepositoryDetailViewModel" />
+
+        <import type="com.github.repositorylist.model.common.Status" />
+
+        <import type="com.github.repositorylist.R" />
     </data>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin">
 
-            <ImageView
-                android:id="@+id/image_repository_detail_avatar"
-                android:layout_width="@dimen/repository_avatar_size"
-                android:layout_height="@dimen/repository_avatar_size"
-                android:layout_marginStart="@dimen/default_margin"
-                android:layout_marginTop="@dimen/default_margin_0_5x"
-                android:layout_marginBottom="@dimen/default_margin_0_5x"
-                android:contentDescription="@string/a11y_item_repository_avatar"
-                app:imageCircular="@{true}"
-                app:imageUrl="@{viewModel.repositoryResponseModel.owner.avatarUrl}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <com.github.repositorylist.widgets.recyclerView.RequestStatusView
+                android:id="@+id/request_status_view_repository_detail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:goneUnless="@{viewModel.userResponseModel.status != Status.SUCCESS}"
+                app:onTryAgain="@{() -> viewModel.tryLoadAgain()}"
+                app:resultStatus="@{viewModel.userResponseModel.status}"
+                app:setErrorMessage="@{R.string.error_repository_detail_fetch_user}" />
 
-            <TextView
-                android:id="@+id/text_repository_user_name"
-                style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_repository_detail_data"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/default_margin"
-                android:layout_marginEnd="@dimen/default_margin"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@{viewModel.userResponseModel.data.name}"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/image_repository_detail_avatar"
-                app:layout_constraintTop_toTopOf="@+id/image_repository_detail_avatar"
-                tools:text="User name" />
+                app:goneUnless="@{viewModel.userResponseModel.status == Status.SUCCESS}">
 
-            <TextView
-                android:id="@+id/text_repository_detail_user_login"
-                style="@style/TextAppearance.MaterialComponents.Caption"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@{viewModel.repositoryResponseModel.name}"
-                app:layout_constraintEnd_toEndOf="@+id/text_repository_user_name"
-                app:layout_constraintStart_toStartOf="@+id/text_repository_user_name"
-                app:layout_constraintTop_toBottomOf="@+id/text_repository_user_name"
-                tools:text="Repository name" />
+                <ImageView
+                    android:id="@+id/image_repository_detail_avatar"
+                    android:layout_width="@dimen/repository_avatar_size"
+                    android:layout_height="@dimen/repository_avatar_size"
+                    android:layout_marginBottom="@dimen/default_margin_0_5x"
+                    android:contentDescription="@string/a11y_item_repository_avatar"
+                    app:imageCircular="@{true}"
+                    app:imageUrl="@{viewModel.repositoryResponseModel.owner.avatarUrl}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_repository_detail_description"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
-                android:layout_marginBottom="@dimen/default_margin"
-                android:text="@{viewModel.repositoryResponseModel.description}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/text_repository_detail_user_login"
-                app:layout_constraintStart_toStartOf="@+id/image_repository_detail_avatar"
-                app:layout_constraintTop_toBottomOf="@+id/image_repository_detail_avatar"
-                tools:text="Repository description" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/text_repository_user_name"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/default_margin"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@{viewModel.userResponseModel.data.name}"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/image_repository_detail_avatar"
+                    app:layout_constraintTop_toTopOf="@+id/image_repository_detail_avatar"
+                    tools:text="User name" />
+
+                <TextView
+                    android:id="@+id/text_repository_detail_user_login"
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@{viewModel.repositoryResponseModel.name}"
+                    app:layout_constraintEnd_toEndOf="@+id/text_repository_user_name"
+                    app:layout_constraintStart_toStartOf="@+id/text_repository_user_name"
+                    app:layout_constraintTop_toBottomOf="@+id/text_repository_user_name"
+                    tools:text="Repository name" />
+
+                <TextView
+                    android:id="@+id/text_repository_detail_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_margin"
+                    android:layout_marginBottom="@dimen/default_margin"
+                    android:text="@{viewModel.repositoryResponseModel.description}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/text_repository_detail_user_login"
+                    app:layout_constraintStart_toStartOf="@+id/image_repository_detail_avatar"
+                    app:layout_constraintTop_toBottomOf="@+id/image_repository_detail_avatar"
+                    tools:text="Repository description" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
     </ScrollView>
 </layout>

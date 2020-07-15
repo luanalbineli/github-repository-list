@@ -14,3 +14,6 @@ This is a Android application code challenge, made with the following prerequisi
   * **Timber**: logging friendly/configurable tool;
   * **Glide**: network image fetching;
   * **LiveData**: observable lifecycle-aware components;
+
+##### Prerequisites to run the project
+* Android Studio 4.0.1+

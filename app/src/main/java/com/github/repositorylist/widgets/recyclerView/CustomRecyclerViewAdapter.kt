@@ -21,7 +21,7 @@ constructor(
     val items: List<TModel>
         get() = mItems
 
-    private var mRequestStatus: RequestStatusView.Status? = null
+    private var mRequestRequestStatusType: RequestStatusView.RequestStatusType? = null
 
     private var mRequestErrorModel: Exception? = null
 
@@ -43,9 +43,9 @@ constructor(
 
     override fun onBindViewHolder(holder: CustomVH, position: Int) {
         if (holder.itemViewType == ViewType.GRID_STATUS.ordinal) {
-            Timber.d("Redrawing the request status: $mRequestStatus - position: $position")
+            Timber.d("Redrawing the request status: $mRequestRequestStatusType - position: $position")
             val requestStatusVH = holder as RequestStatusVH
-            requestStatusVH.bind(mRequestStatus!!, items.isEmpty(), errorMessageResId, emptyMessageResId, onTryAgain)
+            requestStatusVH.bind(mRequestRequestStatusType!!, items.isEmpty(), errorMessageResId, emptyMessageResId, onTryAgain)
             return
         }
 
@@ -61,27 +61,27 @@ constructor(
     }
 
     fun showLoadingStatus() {
-        redrawGridStatus(RequestStatusView.Status.LOADING)
+        redrawGridStatus(RequestStatusView.RequestStatusType.LOADING)
     }
 
     fun showErrorStatus(exception: Exception? = null) {
         mRequestErrorModel = exception
-        redrawGridStatus(RequestStatusView.Status.ERROR)
+        redrawGridStatus(RequestStatusView.RequestStatusType.ERROR)
     }
 
     fun showEmptyStatus() {
-        redrawGridStatus(RequestStatusView.Status.EMPTY)
+        redrawGridStatus(RequestStatusView.RequestStatusType.EMPTY)
     }
 
-    private fun redrawGridStatus(status: RequestStatusView.Status? = null) {
-        if (status == mRequestStatus) { // Already in the state
+    private fun redrawGridStatus(requestStatusType: RequestStatusView.RequestStatusType? = null) {
+        if (requestStatusType == mRequestRequestStatusType) { // Already in the state
             return
         }
 
-        val previousRequestStatus = mRequestStatus
-        mRequestStatus = status
+        val previousRequestStatus = mRequestRequestStatusType
+        mRequestRequestStatusType = requestStatusType
         when {
-            mRequestStatus == null -> {
+            mRequestRequestStatusType == null -> {
                 notifyItemRemoved(itemSize)
             }
             previousRequestStatus == null -> {
@@ -106,7 +106,7 @@ constructor(
 
     @Deprecated("Use itemSize")
     override fun getItemCount(): Int {
-        return super.getItemCount() + if (mRequestStatus == null) 0 else 1
+        return super.getItemCount() + if (mRequestRequestStatusType == null) 0 else 1
     }
 
     protected abstract fun onCreateItemViewHolder(layoutInflater: LayoutInflater, parent: ViewGroup, viewType: Int): THolder

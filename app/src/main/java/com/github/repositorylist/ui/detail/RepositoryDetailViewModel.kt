@@ -20,13 +20,23 @@ class RepositoryDetailViewModel @Inject constructor(
 
     fun init(repositoryResponseModel: RepositoryResponseModel) {
         mRepositoryResponseModel.postValue(repositoryResponseModel)
+        fetchUserDetail(repositoryResponseModel.owner.login)
+    }
+
+    private fun fetchUserDetail(login: String) {
         mUser.addSource(
             githubRepository.getUser(
                 viewModelScope,
-                repositoryResponseModel.owner.login
+                login
             )
         ) {
             mUser.postValue(it)
+        }
+    }
+
+    fun tryLoadAgain() {
+        mRepositoryResponseModel.value?.let { repositoryResponseModel ->
+            fetchUserDetail(repositoryResponseModel.owner.login)
         }
     }
 }

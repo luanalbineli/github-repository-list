@@ -5,13 +5,13 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.github.repositorylist"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -39,6 +39,28 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
+
+    sourceSets {
+        String commonTestDir = 'src/commonTest/java'
+        test {
+            java.srcDirs += [commonTestDir]
+        }
+        androidTest {
+            java.srcDirs += [commonTestDir]
+        }
+    }
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        animationsDisabled = true
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
+    }
 }
 
 dependencies {
@@ -56,10 +78,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
-    // Retrofit + Gson
+    // Retrofit + Gson + OkHttp
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation ("com.squareup.okhttp3:okhttp:$okhttp_version") {
+        force = true
+    }
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
@@ -73,7 +98,7 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timber_version"
 
 
-   /* // Unit tests - JUnit
+    // Unit tests - JUnit
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junit_version"
@@ -82,7 +107,7 @@ dependencies {
     // Unit tests - Faker
     testImplementation "com.github.javafaker:javafaker:$java_faker_version"
     // Unit tests - Coroutines
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"*/
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 
     // Instrumented tests - Orchestrator
     androidTestUtil "androidx.test:orchestrator:$test_orchestrator_version"

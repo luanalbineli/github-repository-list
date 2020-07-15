@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.github.repositorylist.model.common.Result
 import com.github.repositorylist.model.common.Status
 import com.github.repositorylist.model.response.RepositoryResponseModel
+import com.github.repositorylist.model.ui.PaginatedRepositoryListModel
 import com.github.repositorylist.model.ui.RepositoryListStateModel
 import com.github.repositorylist.repository.github.IGithubRepository
 import com.github.repositorylist.ui.common.IRepositoryActions
@@ -23,8 +24,8 @@ class RepositoryListViewModel @Inject constructor(
 
     private var mCancelableJob: CoroutineScope? = null
 
-    private val mRepositoryList = MediatorLiveData<Result<List<RepositoryResponseModel>>>()
-    val repositoryList: LiveData<Result<List<RepositoryResponseModel>>>
+    private val mRepositoryList = MediatorLiveData<Result<PaginatedRepositoryListModel>>()
+    val repositoryList: LiveData<Result<PaginatedRepositoryListModel>>
         get() = mRepositoryList
 
     private val mShowRepositoryDetail = MutableLiveData<RepositoryResponseModel>()
@@ -72,12 +73,17 @@ class RepositoryListViewModel @Inject constructor(
 
         mRepositoryList.addSource(source) {
             Timber.d("showRepositoryList: $it")
-            val updatedStatus = if (it.status == Status.SUCCESS) {
-                mFullRepositoryList.addAll(it.data!!)
-                mRepositoryListStateModel.since = it.data.lastOrNull()?.id
-                Result.success(mFullRepositoryList.toList())
-            } else {
-                it
+            val updatedStatus = when (it.status) {
+                Status.LOADING -> Result.loading()
+                Status.SUCCESS -> {
+                    val repositoryList = it.data!!
+
+                    mFullRepositoryList.addAll(repositoryList)
+                    mRepositoryListStateModel.since = it.data.lastOrNull()?.id
+
+                    Result.success(PaginatedRepositoryListModel(mFullRepositoryList.toList(), hasMorePages = repositoryList.isNotEmpty()))
+                }
+                Status.ERROR -> Result.error(it.exception!!)
             }
 
             mRepositoryList.postValue(updatedStatus)
@@ -95,7 +101,7 @@ class RepositoryListViewModel @Inject constructor(
         ) {
             when (it.status) {
                 Status.LOADING -> Result.loading()
-                Status.SUCCESS -> Result.success(it.data!!.items)
+                Status.SUCCESS -> Result.success(it.data?.items)
                 Status.ERROR -> Result.error(it.exception!!)
             }
         }

@@ -1,6 +1,8 @@
 package com.github.repositorylist.di
 
+import android.os.Build
 import com.github.repositorylist.BuildConfig
+import com.github.repositorylist.repository.common.TLSSocketFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -32,7 +34,7 @@ object AppModule {
             val requestBuilder = original.newBuilder()
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
-                .method(original.method, original.body)
+                .method(original.method(), original.body())
 
             val request = requestBuilder.build()
             chain.proceed(request)
@@ -48,11 +50,20 @@ object AppModule {
             httpClient.addInterceptor(logging)
         }
 
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            val tlsSocketFactory = TLSSocketFactory()
+
+            httpClient.sslSocketFactory(TLSSocketFactory(), tlsSocketFactory.trustManager)
+        }
+
         return httpClient
     }
 
     @Provides
-    fun providesDefaultRetrofitInstance(okHttpClientBuilder: OkHttpClient.Builder, gson: Gson): Retrofit {
+    fun providesDefaultRetrofitInstance(
+        okHttpClientBuilder: OkHttpClient.Builder,
+        gson: Gson
+    ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))

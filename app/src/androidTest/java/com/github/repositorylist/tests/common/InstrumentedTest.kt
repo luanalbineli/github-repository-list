@@ -1,4 +1,4 @@
-package com.github.repositorylist.tests
+package com.github.repositorylist.tests.common
 
 import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
